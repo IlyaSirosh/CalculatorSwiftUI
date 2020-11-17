@@ -7,15 +7,31 @@
 
 import SwiftUI
 
-struct ContentView: View {
+struct CalculatorView: View {
+
+    
     var body: some View {
-        Text("Hello, world!")
-            .padding()
+        VStack {
+            Text("0")
+        
+            HStack {
+                Button(action: {
+                    
+                }, label: {
+                    Text("9")
+                })
+            }
+        }
+    }
+    
+    
+    func handleAction() {
+        
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
-        ContentView()
+        CalculatorView()
     }
 }
