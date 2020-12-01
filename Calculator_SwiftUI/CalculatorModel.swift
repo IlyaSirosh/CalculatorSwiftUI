@@ -9,7 +9,7 @@ import Foundation
 
 
 
-enum CalculatorButton {
+enum CalculatorButtonModel {
     case digit(Int)
     case percentage
     case sign
@@ -36,7 +36,7 @@ enum CalculatorButton {
             return "AC"
     }}
     
-    static let buttons: [[CalculatorButton]] = [
+    static let buttons: [[CalculatorButtonModel]] = [
         [.clear, .sign, .percentage, .operation("/", /)],
         [.digit(7), .digit(8), .digit(9), .operation("*", *)],
         [.digit(4), .digit(5), .digit(6), .operation("-", -)],
@@ -45,12 +45,12 @@ enum CalculatorButton {
     ]
 }
 
-extension CalculatorButton: Identifiable {
+extension CalculatorButtonModel: Identifiable {
     var id: String { text }
 }
 
-extension CalculatorButton: Hashable {
-    static func == (lhs: CalculatorButton, rhs: CalculatorButton) -> Bool {
+extension CalculatorButtonModel: Hashable {
+    static func == (lhs: CalculatorButtonModel, rhs: CalculatorButtonModel) -> Bool {
         return lhs.text == rhs.text
     }
 
