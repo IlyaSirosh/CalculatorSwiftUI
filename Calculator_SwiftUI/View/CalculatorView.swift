@@ -9,29 +9,17 @@ import SwiftUI
 
 struct CalculatorView: View {
     
-    @State var label: String = "0"
-
-    let buttons: [[CalculatorButtonModel]] = CalculatorButtonModel.buttons
-    
-    struct Const {
-        static let spacing: CGFloat = 15.0
-    }
-    
-    fileprivate func displayLabel(text: String) -> Text {
-        return Text(text)
-            .font(.system(size: 94))
-            .foregroundColor(.white)
-    }
+    @ObservedObject var calculatorVM: Calculator = Calculator()
     
     var body: some View {
         ZStack{
             Color.black
                 .ignoresSafeArea(.all)
             
-            VStack(alignment: .trailing, spacing: Const.spacing){
+            VStack(alignment: .center, spacing: Const.spacing){
                 Spacer()
-                displayLabel(text: label)
-                ForEach(buttons, id: \.self) { (buttonsRow) in
+                displayLabel(text: calculatorVM.resultLabel)
+                ForEach(calculatorVM.buttons, id: \.self) { (buttonsRow) in
                     HStack(alignment: .center, spacing: Const.spacing ){
                         ForEach(buttonsRow) { (buttonModel) in
                             calculatorButton(buttonModel)
@@ -42,14 +30,29 @@ struct CalculatorView: View {
         }
     }
     
-    
-    private func handleAction(_ button: CalculatorButtonModel) {
-        print(button.text)
+    private func displayLabel(text: String) -> some View {
+        return Text(text)
+            .font(.system(size: fontSize(text: text)))
+            .foregroundColor(.white)
+            .frame(width: screenWidth, height: 100, alignment: .trailing)
+            .lineLimit(1)
     }
     
-    private func calculatorButton(_ buttonModel: CalculatorButtonModel) -> some View {
+    private func fontSize(text: String) -> CGFloat {
+        let count = text.digitsCount
+        let baseSize: CGFloat = 94
+        let limitCount = 6
+        
+        if count < limitCount {
+            return baseSize
+        } else {
+            return baseSize * (CGFloat(limitCount) / CGFloat(count))
+        }
+    }
+    
+    private func calculatorButton(_ buttonModel: CalculatorButton) -> some View {
         Button(action: {
-            self.handleAction(buttonModel)
+            calculatorVM.press(buttonModel)
         }) {
             Text(buttonModel.text)
                 .frame(width: self.getButtonWidth(for: buttonModel), height: buttonWidth)
@@ -60,7 +63,7 @@ struct CalculatorView: View {
         }
 
     }
-    
+
     private var buttonWidth: CGFloat {
         ( screenWidth / 4) - Const.spacing
     }
@@ -73,7 +76,7 @@ struct CalculatorView: View {
         (UIScreen.screens.first?.bounds.height ?? 0) - 2*Const.spacing
     }
     
-    private func getButtonWidth(for button: CalculatorButtonModel) -> CGFloat{
+    private func getButtonWidth(for button: CalculatorButton) -> CGFloat{
         if button == .digit(0) {
             return 2*buttonWidth + Const.spacing
         } else {
@@ -81,7 +84,7 @@ struct CalculatorView: View {
         }
     }
     
-    private func getBackgroundColor(for button: CalculatorButtonModel) -> Color {
+    private func getBackgroundColor(for button: CalculatorButton) -> Color {
         switch button {
         case .operation(_, _), .equal:
             return .orange
@@ -99,13 +102,17 @@ struct CalculatorView: View {
         return Color(.sRGB, red: red, green: green, blue: blue, opacity: 1)
     }
     
-    private func getForegroundColor(for button: CalculatorButtonModel) -> Color {
+    private func getForegroundColor(for button: CalculatorButton) -> Color {
         switch button {
         case .clear, .sign, .percentage:
             return .black
         default:
             return .white
         }
+    }
+    
+    struct Const {
+        static let spacing: CGFloat = 15.0
     }
 }
 
